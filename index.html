@@ -1,50 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kết nối Zalo</title>
+    <title>Đang chuyển hướng...</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #f0f2f5; }
-        .btn { padding: 15px 30px; background-color: #0068ff; color: white; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 15px rgba(0,104,255,0.3); }
-        .note { margin-top: 20px; color: #555; text-align: center; padding: 0 20px; line-height: 1.5; }
-        .step { color: #d32f2f; font-weight: bold; }
+        body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #fff; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        p { margin-top: 20px; color: #666; font-size: 14px; }
     </style>
 </head>
 <body>
 
-    <a href="zalo://qr/p/0326883988" class="btn" id="openBtn">MỞ ZALO KẾT BẠN NGAY</a>
-
-    <div class="note">
-        <p>Nếu không tự động mở ứng dụng, hãy:</p>
-        <p>1. Bấm vào <b>dấu 3 chấm (⋮)</b> góc trên bên phải</p>
-        <p class="step">2. Chọn "Mở bằng trình duyệt" (Open in Browser)</p>
-    </div>
+    <div class="loader"></div>
+    <p>Đang kiểm tra bảo mật...</p>
 
     <script>
-        const zaloAppUrl = "zalo://qr/p/0326883988";
-        const zaloWebUrl = "https://zalo.me/0326883988";
+        // Link Zalo cuối cùng
+        const targetUrl = "https://zalo.me/0326883988";
+        
+        // Tạo một link trung gian qua Google để "tẩy sạch" referrer của TikTok
+        // Cách này đánh lừa trình duyệt TikTok rằng người dùng đang đi sang Google
+        const googleRedirect = "https://www.google.com/url?q=" + encodeURIComponent(targetUrl);
 
-        // Tự động kích hoạt khi vào trang
-        window.onload = function() {
-            // Cố gắng mở app ngay lập tức
-            window.location.href = zaloAppUrl;
-            
-            // Nếu sau 2 giây vẫn ở lại trang này, có thể do trình duyệt TikTok chặn
-            // Chúng ta hiển thị nút bấm để người dùng click thủ công
-            setTimeout(function() {
-                console.log("Deep link có thể đã bị chặn bởi trình duyệt nội bộ.");
-            }, 2000);
-        };
+        function redirect() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            const isAndroid = /Android/i.test(ua);
+            const isTikTok = /TikTok/i.test(ua);
 
-        // Xử lý khi nhấn nút
-        document.getElementById('openBtn').onclick = function(e) {
-            window.location.href = zaloAppUrl;
-            // Backup nếu không có app Zalo
-            setTimeout(function() {
-                window.location.href = zaloWebUrl;
-            }, 500);
-        };
+            if (isTikTok) {
+                if (isAndroid) {
+                    // Đối với Android: Dùng Intent để ÉP mở bằng Chrome thay vì trình duyệt TikTok
+                    // Khi sang Chrome, nó sẽ tự động nhận diện và mở app Zalo
+                    window.location.href = "intent://zalo.me/0326883988#Intent;scheme=https;package=com.android.chrome;end";
+                } else {
+                    // Đối với iPhone: Chuyển hướng qua Google trước
+                    window.location.replace(googleRedirect);
+                }
+            } else {
+                // Nếu đã thoát ra ngoài trình duyệt thường, nhảy thẳng vào Zalo
+                window.location.replace(targetUrl);
+            }
+        }
+
+        // Đợi 1 giây để giả lập kiểm tra bảo mật (tránh bot TikTok quét lệnh nhảy ngay lập tức)
+        setTimeout(redirect, 1000);
     </script>
 </body>
 </html>
