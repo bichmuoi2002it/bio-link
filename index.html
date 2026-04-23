@@ -2,53 +2,71 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kết nối an toàn</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tiếp tục đến trang...</title>
     <style>
-        body { font-family: sans-serif; background: #f4f4f9; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 85%; }
-        .btn { 
-            display: block; background: #0068ff; color: white; text-decoration: none; 
-            padding: 18px; border-radius: 50px; font-weight: bold; font-size: 18px;
-            margin-top: 20px; animation: pulse 2s infinite;
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #ffffff; }
+        /* Tạo một nút bấm khổng lồ bao phủ toàn bộ màn hình */
+        .overlay-button {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 100%; height: 100%; text-decoration: none; color: #333; text-align: center;
+            background: radial-gradient(circle, #ffffff 0%, #f0f0f0 100%);
         }
+        .icon-circle {
+            width: 80px; height: 80px; background: #0068ff; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,104,255,0.4);
+            animation: pulse 1.5s infinite;
+        }
+        .icon-circle svg { width: 40px; fill: white; }
+        h2 { font-family: sans-serif; font-size: 22px; margin: 10px 20px; color: #000; }
+        p { font-family: sans-serif; font-size: 16px; color: #666; margin: 0 30px; line-height: 1.4; }
+        .hint { margin-top: 50px; font-size: 12px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        
         @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 104, 255, 0.7); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(0, 104, 255, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 104, 255, 0); }
+            0% { transform: scale(0.95); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(0.95); }
         }
-        p { color: #666; font-size: 15px; line-height: 1.4; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2 style="margin-bottom: 10px;">Xin chào bác!</h2>
-        <p>Để đảm bảo an toàn và xem được đầy đủ hình ảnh, bác vui lòng bấm nút bên dưới:</p>
-        
-        <a href="intent://beacons.ai/trangsucphongthuythanhhuy#Intent;scheme=https;package=com.android.chrome;end" class="btn" id="openLink"> BẤM VÀO ĐÂY ĐỂ XEM </a>
-        
-        <p style="margin-top: 20px; font-size: 12px; color: #999;">(Tự động mở bằng Google Chrome hoặc Safari)</p>
-    </div>
+
+    <a href="#" id="bigLink" class="overlay-button">
+        <div class="icon-circle">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+        </div>
+        <h2>CHẠM ĐỂ XEM CHI TIẾT</h2>
+        <p>Bác vui lòng chạm tay vào màn hình để kết nối với Zalo của em nhé!</p>
+        <div class="hint">An toàn 100% - Bảo mật bởi Google</div>
+    </a>
 
     <script>
-        const targetUrl = "https://beacons.ai/trangsucphongthuythanhhuy";
-        const isAndroid = /Android/i.test(navigator.userAgent);
-        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const finalUrl = "https://beacons.ai/trangsucphongthuythanhhuy";
+        const btn = document.getElementById('bigLink');
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
 
-        // Nếu khách dùng iPhone, nút bấm sẽ đổi link thành link thường 
-        // nhưng sẽ kèm theo lệnh qua Google để kích thích Safari mở
-        if (isIOS) {
-            document.getElementById('openLink').href = "https://www.google.com/url?q=" + encodeURIComponent(targetUrl);
-        }
-
-        // Vẫn giữ lệnh tự động mở cho các máy đời thấp hoặc trình duyệt chưa chặn gắt
-        window.onload = function() {
-            setTimeout(() => {
-                if (isAndroid) {
-                    window.location.href = document.getElementById('openLink').href;
-                }
-            }, 1500);
+        // Xử lý lệnh khi khách CHẠM vào màn hình
+        btn.onclick = function(e) {
+            e.preventDefault();
+            
+            if (/Android/i.test(ua)) {
+                // Lệnh Android: Ép mở Chrome (Intent)
+                window.location.href = "intent://" + finalUrl.replace(/^https?:\/\//, "") + "#Intent;scheme=https;package=com.android.chrome;end";
+            } else if (/iPhone|iPad|iPod/i.test(ua)) {
+                // Lệnh iOS: Chuyển qua Google để Safari tự nhận diện
+                window.location.href = "https://www.google.com/url?q=" + encodeURIComponent(finalUrl);
+            } else {
+                window.location.href = finalUrl;
+            }
         };
+
+        // Vẫn giữ một lệnh tự động sau 2 giây cho các máy đời cũ chưa chặn gắt
+        setTimeout(() => {
+            if (/Android/i.test(ua) && (ua.includes("TikTok") || ua.includes("Zalo"))) {
+                 window.location.href = "intent://" + finalUrl.replace(/^https?:\/\//, "") + "#Intent;scheme=https;package=com.android.chrome;end";
+            }
+        }, 2000);
     </script>
 </body>
 </html>
