@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kết nối Zalo</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #f0f2f5; }
+        .btn { padding: 15px 30px; background-color: #0068ff; color: white; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 15px rgba(0,104,255,0.3); }
+        .note { margin-top: 20px; color: #555; text-align: center; padding: 0 20px; line-height: 1.5; }
+        .step { color: #d32f2f; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <a href="zalo://qr/p/0326883988" class="btn" id="openBtn">MỞ ZALO KẾT BẠN NGAY</a>
+
+    <div class="note">
+        <p>Nếu không tự động mở ứng dụng, hãy:</p>
+        <p>1. Bấm vào <b>dấu 3 chấm (⋮)</b> góc trên bên phải</p>
+        <p class="step">2. Chọn "Mở bằng trình duyệt" (Open in Browser)</p>
+    </div>
+
+    <script>
+        const zaloAppUrl = "zalo://qr/p/0869967989";
+        const zaloWebUrl = "https://zalo.me/0869967989";
+
+        // Tự động kích hoạt khi vào trang
+        window.onload = function() {
+            // Cố gắng mở app ngay lập tức
+            window.location.href = zaloAppUrl;
+            
+            // Nếu sau 2 giây vẫn ở lại trang này, có thể do trình duyệt TikTok chặn
+            // Chúng ta hiển thị nút bấm để người dùng click thủ công
+            setTimeout(function() {
+                console.log("Deep link có thể đã bị chặn bởi trình duyệt nội bộ.");
+            }, 2000);
+        };
+
+        // Xử lý khi nhấn nút
+        document.getElementById('openBtn').onclick = function(e) {
+            window.location.href = zaloAppUrl;
+            // Backup nếu không có app Zalo
+            setTimeout(function() {
+                window.location.href = zaloWebUrl;
+            }, 500);
+        };
+    </script>
+</body>
+</html>
