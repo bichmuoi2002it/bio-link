@@ -3,49 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đang chuyển hướng...</title>
+    <title>Đang chuyển hướng an toàn...</title>
     <style>
-        body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background-color: #fff; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        body { 
+            font-family: -apple-system, sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+            background-color: #ffffff; 
+        }
+        .loading-box { text-align: center; }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4285F4; /* Màu xanh Google */
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        p { margin-top: 20px; color: #666; font-size: 14px; }
+        p { color: #5f6368; font-size: 14px; }
     </style>
 </head>
 <body>
 
-    <div class="loader"></div>
-    <p>Đang kiểm tra bảo mật...</p>
+    <div class="loading-box">
+        <div class="spinner"></div>
+        <p>Đang kết nối an toàn với Google...</p>
+    </div>
 
     <script>
-        // Link Zalo cuối cùng
-        const targetUrl = "https://zalo.me/0326883988";
+        // Link đích của bạn
+        const finalDest = "https://phongthuythanhhuy.taplink.site";
         
-        // Tạo một link trung gian qua Google để "tẩy sạch" referrer của TikTok
-        // Cách này đánh lừa trình duyệt TikTok rằng người dùng đang đi sang Google
-        const googleRedirect = "https://www.google.com/url?q=" + encodeURIComponent(targetUrl);
+        // Cấu trúc link chuyển hướng thông qua Google
+        const googleUrl = "https://www.google.com/url?q=" + encodeURIComponent(finalDest);
 
-        function redirect() {
+        function doRedirect() {
             const ua = navigator.userAgent || navigator.vendor || window.opera;
             const isAndroid = /Android/i.test(ua);
             const isTikTok = /TikTok/i.test(ua);
 
             if (isTikTok) {
                 if (isAndroid) {
-                    // Đối với Android: Dùng Intent để ÉP mở bằng Chrome thay vì trình duyệt TikTok
-                    // Khi sang Chrome, nó sẽ tự động nhận diện và mở app Zalo
-                    window.location.href = "intent://zalo.me/0326883988#Intent;scheme=https;package=com.android.chrome;end";
+                    // Nếu là Android, ép trình duyệt TikTok mở bằng Chrome ngoài
+                    // Khi ra Chrome, lệnh chuyển hướng Google sẽ chạy mượt mà
+                    window.location.href = "intent://" + finalDest.replace(/^https?:\/\//, "") + "#Intent;scheme=https;package=com.android.chrome;end";
                 } else {
-                    // Đối với iPhone: Chuyển hướng qua Google trước
-                    window.location.replace(googleRedirect);
+                    // Nếu là iPhone/Máy tính, dùng replace để không lưu lịch sử trang cũ, tránh bị quay lại trang lỗi
+                    window.location.replace(googleUrl);
                 }
             } else {
-                // Nếu đã thoát ra ngoài trình duyệt thường, nhảy thẳng vào Zalo
-                window.location.replace(targetUrl);
+                // Nếu khách đã ở trình duyệt ngoài rồi thì nhảy thẳng
+                window.location.replace(finalDest);
             }
         }
 
-        // Đợi 1 giây để giả lập kiểm tra bảo mật (tránh bot TikTok quét lệnh nhảy ngay lập tức)
-        setTimeout(redirect, 1000);
+        // Đợi 1.2 giây để đảm bảo script tải xong và lách quét tự động của TikTok
+        setTimeout(doRedirect, 1200);
     </script>
 </body>
 </html>
