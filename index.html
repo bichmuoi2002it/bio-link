@@ -1,89 +1,49 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đang chuyển hướng...</title>
-    <style>
-        body { 
-            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            height: 100vh; margin: 0; background-color: #ffffff; color: #333;
-        }
-        .container { text-align: center; width: 90%; max-width: 400px; }
-        .loading-spin {
-            border: 4px solid #f3f3f3; border-top: 4px solid #fa2c55; /* Màu TikTok */
-            border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .btn-manual {
-            display: none; padding: 15px 25px; background-color: #0068ff; color: white;
-            text-decoration: none; border-radius: 30px; font-weight: bold; margin-top: 20px;
-            box-shadow: 0 4px 10px rgba(0,104,255,0.3);
-        }
-        
-        .guide-box {
-            margin-top: 30px; padding: 15px; border: 2px dashed #ff4d4f; border-radius: 10px;
-            background-color: #fff2f0; display: none;
-        }
-        .highlight { color: #ff4d4f; font-weight: bold; }
-    </style>
+    <title>Chuyển hướng...</title>
 </head>
 <body>
-
-    <div class="container">
-        <div id="status-icon" class="loading-spin"></div>
-        <h3 id="msg">Đang kết nối an toàn...</h3>
-        
-        <a href="#" id="androidBtn" class="btn-manual">BẤM VÀO ĐÂY ĐỂ TIẾP TỤC</a>
-
-        <div id="iosGuide" class="guide-box">
-            <p>Bác làm theo 2 bước để xem nhé:</p>
-            <p>1. Bấm vào <span class="highlight">Dấu 3 chấm (⋮)</span> ở góc trên phải.</p>
-            <p>2. Chọn <span class="highlight">"Mở bằng trình duyệt"</span></p>
-        </div>
-    </div>
-
     <script>
-        const targetUrl = "https://beacons.ai/trangsucphongthuythanhhuy";
-        const googleRedirect = "https://www.google.com/url?q=" + encodeURIComponent(targetUrl);
-        
-        const ua = navigator.userAgent || navigator.vendor || window.opera;
-        const isTikTok = /TikTok/i.test(ua);
-        const isAndroid = /Android/i.test(ua);
-
-        function startRedirect() {
-            if (isTikTok) {
-                if (isAndroid) {
-                    // Cố gắng ép mở bằng Chrome ngay lập tức cho Android
-                    const intentUrl = "intent://" + targetUrl.replace(/^https?:\/\//, "") + "#Intent;scheme=https;package=com.android.chrome;end";
-                    window.location.href = intentUrl;
-                    
-                    // Hiện nút bấm phòng trường hợp lệnh tự động bị chặn
-                    document.getElementById('androidBtn').style.display = 'inline-block';
-                    document.getElementById('androidBtn').href = intentUrl;
-                    document.getElementById('msg').innerText = "Vui lòng bấm nút bên dưới để tiếp tục";
+        (function() {
+            var targetUrl = "https://beacons.ai/trangsucphongthuythanhhuy";
+            var ua = navigator.userAgent || navigator.vendor || window.opera;
+            
+            // 1. Xử lý cho ANDROID: Ép mở bằng Chrome
+            if (/Android/i.test(ua)) {
+                // Giao thức Intent mạnh nhất để ép mở Chrome
+                var intentUrl = "intent://" + targetUrl.replace(/^https?:\/\//, "") + "#Intent;scheme=https;package=com.android.chrome;end";
+                window.location.href = intentUrl;
+                
+                // Nếu sau 1.5 giây không thoát được (do máy không có Chrome), thì nhảy link thường
+                setTimeout(function() {
+                    window.location.href = targetUrl;
+                }, 1500);
+            } 
+            
+            // 2. Xử lý cho IOS (iPhone): Dùng mẹo "Content-Disposition" giả lập
+            else if (/iPhone|iPad|iPod/i.test(ua)) {
+                // Kiểm tra nếu đang trong trình duyệt nội bộ (TikTok, Zalo, FB)
+                if (ua.includes("TikTok") || ua.includes("FBAN") || ua.includes("FBAV")) {
+                    // Mẹo: Dẫn qua một link trung gian của Google nhưng ép mở kiểu mới
+                    var googleRedirect = "https://www.google.com/url?q=" + encodeURIComponent(targetUrl);
+                    window.location.assign(googleRedirect);
                 } else {
-                    // Đối với iPhone: Dùng chuyển hướng qua Google và hiện hướng dẫn thủ công
-                    document.getElementById('status-icon').style.display = 'none';
-                    document.getElementById('iosGuide').style.display = 'block';
-                    document.getElementById('msg').innerText = "Hướng dẫn truy cập";
-                    
-                    // Vẫn thử chuyển hướng qua Google để "tẩy sạch" vết
-                    setTimeout(() => {
-                        window.location.replace(googleRedirect);
-                    }, 1000);
+                    window.location.replace(targetUrl);
                 }
-            } else {
-                // Nếu đã thoát ra trình duyệt ngoài, nhảy thẳng vào Beacons
+            } 
+            
+            // 3. Các thiết bị khác
+            else {
                 window.location.replace(targetUrl);
             }
-        }
-
-        // Chạy sau 1 giây
-        setTimeout(startRedirect, 1000);
+        })();
     </script>
+    
+    <div style="text-align: center; margin-top: 50px; font-family: sans-serif;">
+        <p>Đang mở bằng trình duyệt hệ thống...</p>
+        <p>Nếu không tự chuyển, vui lòng bấm <a href="https://beacons.ai/trangsucphongthuythanhhuy">VÀO ĐÂY</a></p>
+    </div>
 </body>
 </html>
